@@ -1,6 +1,8 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
+let intervalID = 0;
+
 let x = canvas.width / 2;
 let y = canvas.height - 30;
 
@@ -23,30 +25,32 @@ let wPressed = false;
 let sPressed = false;
 
 function bounce(){
-    if((x - (ballRadius/2) + dx) <= 0 || (x + (ballRadius/2) + dx) >= canvas.width){
-        dx = -dx;
-    }
-
     let ballPosX = (x - (ballRadius/2) + dx);
 
     let hitLeftPaddleX = (ballPosX <= paddleX + paddleWidth);
     let hitLeftPaddleTop = (y + (ballRadius/2) + dy) >= paddleY1;
     let hitLeftPaddleBottom = (y - (ballRadius/2) + dy) <= (paddleY1 + paddleHeight);
 
-    let hitRightPaddleX = (ballPosX >= paddleX2);
+    let hitRightPaddleX = (ballPosX >= paddleX2 - paddleWidth);
     let hitRightPaddleTop = (y + (ballRadius/2) + dy) >= paddleY2;
     let hitRightPaddleBottom = (y - (ballRadius/2) + dy) <= (paddleY2 + paddleHeight);
 
     // check if the ball hits the paddle on the left
-    if(hitLeftPaddleX && (hitLeftPaddleTop || hitLeftPaddleBottom)){
-        console.log(hitLeftPaddleX);
-        console.log(hitLeftPaddleTop);
-        console.log(hitLeftPaddleBottom);
+    if(hitLeftPaddleX && (hitLeftPaddleTop && hitLeftPaddleBottom)){
+        console.log("hitLeftPaddleX:" + hitLeftPaddleX);
+        console.log("hitLeftPaddleTop:" + hitLeftPaddleTop);
+        console.log("hitLeftPaddleBottom:" + hitLeftPaddleBottom);
         dx = -dx;
     }
     // check if the ball hits the paddle on the right
-    if(hitRightPaddleX && (hitRightPaddleTop || hitRightPaddleBottom)){
+    if(hitRightPaddleX && (hitRightPaddleTop && hitRightPaddleBottom)){
         dx = -dx;
+    }
+
+    if((x - (ballRadius/2) + dx) <= 0 || (x + (ballRadius/2) + dx) >= canvas.width){
+        console.log(intervalID);
+        clearInterval(intervalID);
+        gameOver();
     }
 
     // check if the ball bounces off of the top or bottom
@@ -69,8 +73,6 @@ function drawPaddles(){
     } else if (upPressed) {
         paddleY2 = Math.max(paddleY2 - speed, 0);
     }
-
-    console.log(paddleY1);
 
     ctx.beginPath();
     ctx.rect(paddleX, paddleY1, paddleWidth, paddleHeight);
@@ -129,10 +131,42 @@ function drawBall() {
   }  
 
   function startGame(){
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
     document.addEventListener("keydown", keyDownHandler, false);
     document.addEventListener("keyup", keyUpHandler, false);
 
-    setInterval(draw, 10);
+    intervalID = setInterval(draw, 10);
+  }
+
+  function gameOver(){
+    // Create overlay container
+    const overlay = document.createElement('div');
+    overlay.classList.add('overlay');
+    
+    // Create content (e.g., Game Over message and button)
+    const message = document.createElement('div');
+    message.style.position = 'absolute';
+    message.style.top = '50%';
+    message.style.left = '50%';
+    message.style.transform = 'translate(-50%, -50%)';
+    message.style.textAlign = 'center';
+    message.style.color = 'white';
+    
+    const gameOverText = document.createElement('h1');
+    gameOverText.textContent = 'GAME OVER';
+
+    const restartButton = document.createElement('button');
+    restartButton.textContent = 'NEW GAME';
+    restartButton.onclick = startGame;
+
+    // Append elements
+    message.appendChild(gameOverText);
+    message.appendChild(restartButton);
+    overlay.appendChild(message);
+    document.body.appendChild(overlay);
   }
   
   document.getElementById("startButton").addEventListener("click", function() {
