@@ -132,8 +132,10 @@ function drawBall() {
 
   function startGame(){
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    //canvas.width = window.innerWidth;
+    //canvas.height = window.innerHeight;
+    x = canvas.width / 2;
+    y = canvas.height - 30;
 
     document.addEventListener("keydown", keyDownHandler, false);
     document.addEventListener("keyup", keyUpHandler, false);
