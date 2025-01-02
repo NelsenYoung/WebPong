@@ -10,6 +10,7 @@ const wss = new WebSocket.Server({server})
 
 var numClients = 0;
 wss.on('connection', function connection(ws) {
+  /*
   ws.on('error', console.error);
   numClients += 1;
   console.log("New Client Connected");
@@ -18,7 +19,25 @@ wss.on('connection', function connection(ws) {
   ws.on('message', function message(data) {
     console.log('received: %s', data);
   });
+  */
+
+  ws.on('message', )
+
 });
+
+function ParseMessage(message){
+  try{
+    data = JSON.parse(message);
+    switch(data.action){
+      case 'nameButtonPressed':
+        console.log("CHANGE THIS");
+      default:
+        console.log("CHANGE THIS"); 
+    }
+  } catch (err) {
+    console.error('Failed to parse message:', message, err);
+  }
+}
 
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
